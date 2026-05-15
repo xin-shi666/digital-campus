@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园数字孪生系统 - 浙江树人学院</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 顶部标题栏 -->
+    <div id="header">
+        <h1>校园数字孪生交互系统</h1>
+        <span class="subtitle">浙江树人学院 · 计算机图形学</span>
+    </div>
+
+    <!-- 左侧图层控制面板 -->
+    <div id="layer-panel">
+        <h3>图层控制</h3>
+        <label class="layer-item">
+            <input type="checkbox" id="layer-buildings" checked>
+            <span>建筑物</span>
+        </label>
+        <label class="layer-item">
+            <input type="checkbox" id="layer-roads" checked>
+            <span>道路</span>
+        </label>
+        <label class="layer-item">
+            <input type="checkbox" id="layer-vegetation" checked>
+            <span>植被</span>
+        </label>
+        <label class="layer-item">
+            <input type="checkbox" id="layer-facilities" checked>
+            <span>设施</span>
+        </label>
+    </div>
+
+    <!-- 右侧视角切换面板 -->
+    <div id="view-panel">
+        <h3>视角切换</h3>
+        <button class="view-btn active" data-view="perspective">透视图</button>
+        <button class="view-btn" data-view="top">鸟瞰图</button>
+        <button class="view-btn" data-view="front">前视图</button>
+        <button class="view-btn" data-view="side">侧视图</button>
+    </div>
+
+    <!-- 底部信息提示 -->
+    <div id="hint-bar">
+        <span>鼠标左键：旋转</span> |
+        <span>鼠标滚轮：缩放</span> |
+        <span>鼠标右键：平移</span> |
+        <span>点击建筑：查看信息</span>
+    </div>
+
+    <!-- 建筑信息弹窗 -->
+    <div id="info-panel" class="hidden">
+        <div class="info-header">
+            <h2 id="info-title"></h2>
+            <button id="info-close">✕</button>
+        </div>
+        <div class="info-body">
+            <img id="info-image" src="" alt="">
+            <p id="info-desc"></p>
+        </div>
+    </div>
+
+    <!-- 加载提示 -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>校园场景加载中...</p>
+    </div>
+
+    <!-- Three.js 画布容器 -->
+    <div id="canvas-container"></div>
+
+    <!-- Three.js Import Map -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
