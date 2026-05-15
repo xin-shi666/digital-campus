@@ -104,21 +104,21 @@ function buildScene() {
     // 中心广场
     createFountain(0, 0);
 
-    // 北区：图书馆 + 教学楼A
-    createFeaturedBuilding(-20, -38, 10, 6, 12, 0xd4c5a9, buildingInfo.library);
-    createBuilding(20, -38, 9, 5, 10, 0xc4d5e0, buildingInfo.teachingA);
+    // 北区：图书馆 + 教学楼A（避开内环纵路和北外环横路）
+    createFeaturedBuilding(-24, -36, 10, 6, 12, 0xd4c5a9, buildingInfo.library);
+    createBuilding(24, -36, 9, 5, 10, 0xc4d5e0, buildingInfo.teachingA);
 
-    // 南区：行政中心 + 教学楼B
-    createFeaturedBuilding(0, 38, 8, 6, 9, 0xe8dcc8, buildingInfo.admin, 0x445588);
-    createBuilding(-20, 30, 9, 5, 9, 0xd0d8e0, buildingInfo.teachingB);
+    // 南区：行政中心（避开中央主轴）+ 教学楼B
+    createFeaturedBuilding(5, 38, 8, 6, 9, 0xe8dcc8, buildingInfo.admin, 0x445588);
+    createBuilding(-24, 31, 9, 5, 9, 0xd0d8e0, buildingInfo.teachingB);
 
-    // 东区：食堂 + 体育馆
-    createBuilding(32, -12, 8, 6, 6, 0xe0d0c0, buildingInfo.canteen);
-    createFeaturedBuilding(34, 14, 11, 7, 7, 0xccd0d8, buildingInfo.gym, 0x336699);
+    // 东区：食堂 + 体育馆（避开东外环纵路和东连接线）
+    createBuilding(31, -14, 8, 6, 6, 0xe0d0c0, buildingInfo.canteen);
+    createFeaturedBuilding(31, 16, 11, 7, 7, 0xccd0d8, buildingInfo.gym, 0x336699);
 
-    // 西区：宿舍区
-    createBuilding(-32, -12, 6, 5, 8, 0xe8ddd0, buildingInfo.dormA);
-    createBuilding(-32, 14, 6, 5, 8, 0xe0d8cc, buildingInfo.dormB);
+    // 西区：宿舍区（避开西外环纵路）
+    createBuilding(-33, -14, 6, 5, 8, 0xe8ddd0, buildingInfo.dormA);
+    createBuilding(-33, 16, 6, 5, 8, 0xe0d8cc, buildingInfo.dormB);
 
     // ===== 植被（分散自然分布） =====
     // 主干道两侧行道树（间距加大）
