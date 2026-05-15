@@ -53,55 +53,96 @@ function buildScene() {
     const scene = getScene();
     const layerGroups = getLayerGroups();
 
-    // 道路系统
-    createRoad(0, 0, 6, 50);
-    createRoad(0, 0, 4, 30, Math.PI / 2);
-    createRoad(0, -12, 3, 20);
-    createRoad(0, 12, 3, 20);
-    createRoad(-10, 0, 3, 22, Math.PI / 2);
-    createRoad(10, 0, 3, 22, Math.PI / 2);
+    // ===== 道路系统 =====
+    // 中央十字主干道（扩宽延长）
+    createRoad(0, 0, 7, 95);                    // 南北主干道 z:-47 ~ z:47
+    createRoad(0, 0, 6, 80, Math.PI / 2);       // 东西主干道 x:-40 ~ x:40
+    // 北环道路
+    createRoad(0, -32, 4, 55);                   // 北侧横路
+    // 南环道路
+    createRoad(0, 32, 4, 55);                    // 南侧横路
+    // 西环道路
+    createRoad(-24, 0, 3, 50, Math.PI / 2);      // 西侧纵路
+    // 东环道路
+    createRoad(24, 0, 3, 50, Math.PI / 2);       // 东侧纵路
+    // 连接支路
+    createRoad(0, -16, 3, 16, Math.PI / 2);      // 北区连接
+    createRoad(0, 16, 3, 16, Math.PI / 2);       // 南区连接
 
-    // 建筑群
+    // ===== 建筑群（分散布局） =====
+    // 中心广场
     createFountain(0, 0);
-    createFeaturedBuilding(-8, -18, 8, 5, 9, 0xd4c5a9, buildingInfo.library);
-    createBuilding(6, -18, 7, 4, 8, 0xc4d5e0, buildingInfo.teachingA);
-    createFeaturedBuilding(0, 18, 7, 5, 7, 0xe8dcc8, buildingInfo.admin, 0x445588);
-    createBuilding(-10, 14, 7, 4, 7, 0xd0d8e0, buildingInfo.teachingB);
-    createBuilding(14, -6, 6, 5, 5, 0xe0d0c0, buildingInfo.canteen);
-    createFeaturedBuilding(16, 8, 9, 6, 6, 0xccd0d8, buildingInfo.gym, 0x336699);
-    createBuilding(-14, -6, 5, 4, 7, 0xe8ddd0, buildingInfo.dormA);
-    createBuilding(-14, 6, 5, 4, 7, 0xe0d8cc, buildingInfo.dormB);
 
-    // 植被
-    const treePositions = [
-        [3.5, -18], [3.5, -14], [3.5, -10], [3.5, -6], [3.5, -2],
-        [3.5, 2], [3.5, 6], [3.5, 10], [3.5, 14], [3.5, 18],
-        [-3.5, -18], [-3.5, -14], [-3.5, -10], [-3.5, -6], [-3.5, -2],
-        [-3.5, 2], [-3.5, 6], [-3.5, 10], [-3.5, 14], [-3.5, 18],
-        [-12, 3], [-8, 3], [-6, 3], [6, 3], [8, 3], [12, 3],
-        [-12, -3], [-8, -3], [-6, -3], [6, -3], [8, -3], [12, -3],
-        [-16, -16], [-16, -10], [-16, 10], [-16, 16],
-        [16, -16], [16, -10], [16, 16],
-        [0, 22], [-6, 22], [6, 22]
+    // 北区：图书馆 + 教学楼A（拉开距离）
+    createFeaturedBuilding(-20, -38, 8, 5, 10, 0xd4c5a9, buildingInfo.library);
+    createBuilding(20, -38, 7, 4, 8, 0xc4d5e0, buildingInfo.teachingA);
+
+    // 南区：行政中心 + 教学楼B
+    createFeaturedBuilding(0, 38, 7, 5, 7, 0xe8dcc8, buildingInfo.admin, 0x445588);
+    createBuilding(-20, 30, 7, 4, 7, 0xd0d8e0, buildingInfo.teachingB);
+
+    // 东区：食堂 + 体育馆
+    createBuilding(32, -12, 6, 5, 5, 0xe0d0c0, buildingInfo.canteen);
+    createFeaturedBuilding(34, 14, 9, 6, 6, 0xccd0d8, buildingInfo.gym, 0x336699);
+
+    // 西区：宿舍区
+    createBuilding(-32, -12, 5, 4, 7, 0xe8ddd0, buildingInfo.dormA);
+    createBuilding(-32, 14, 5, 4, 7, 0xe0d8cc, buildingInfo.dormB);
+
+    // ===== 植被（分散自然分布） =====
+    // 主干道两侧行道树（间距加大）
+    for (let z = -40; z <= 40; z += 5) {
+        createTree(4.5 + (Math.random() - 0.5) * 2, z + (Math.random() - 0.5) * 2, 0.7 + Math.random() * 0.6);
+        createTree(-4.5 + (Math.random() - 0.5) * 2, z + (Math.random() - 0.5) * 2, 0.7 + Math.random() * 0.6);
+    }
+    for (let x = -36; x <= 36; x += 6) {
+        createTree(x + (Math.random() - 0.5) * 2, 4.5 + (Math.random() - 0.5) * 2, 0.7 + Math.random() * 0.6);
+        createTree(x + (Math.random() - 0.5) * 2, -4.5 + (Math.random() - 0.5) * 2, 0.7 + Math.random() * 0.6);
+    }
+
+    // 建筑周边绿化（每栋建筑周围散落2-4棵）
+    const buildingTrees = [
+        [-20, -38], [-14, -38], [-26, -38],
+        [20, -38], [14, -38], [26, -38],
+        [0, 38], [-6, 38], [6, 38],
+        [-20, 30], [-14, 30], [-26, 30],
+        [32, -12], [26, -12], [38, -12],
+        [34, 14], [28, 14], [40, 14],
+        [-32, -12], [-38, -12], [-26, -12],
+        [-32, 14], [-38, 14], [-26, 14]
     ];
-    treePositions.forEach(([tx, tz]) => {
-        const scale = 0.7 + Math.random() * 0.7;
-        createTree(tx + (Math.random() - 0.5) * 1.5, tz + (Math.random() - 0.5) * 1.5, scale);
+    buildingTrees.forEach(([tx, tz]) => {
+        createTree(tx + (Math.random() - 0.5) * 3, tz + (Math.random() - 0.5) * 3, 0.6 + Math.random() * 0.5);
     });
 
-    // 设施
-    for (let z = -22; z <= 22; z += 7) {
-        createLamp(3.8, z);
-        createLamp(-3.8, z);
-    }
-    for (let x = -12; x <= 12; x += 8) {
-        createLamp(x, 3.5);
-        createLamp(x, -3.5);
+    // 开阔区域散落树木（校园边缘地带）
+    for (let i = 0; i < 18; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 25 + Math.random() * 25;
+        const tx = Math.cos(angle) * dist;
+        const tz = Math.sin(angle) * dist;
+        createTree(tx, tz, 0.5 + Math.random() * 0.8);
     }
 
+    // ===== 设施 =====
+    // 路灯沿主干道分布（间距加大）
+    for (let z = -42; z <= 42; z += 8) {
+        createLamp(4.8, z);
+        createLamp(-4.8, z);
+    }
+    for (let x = -36; x <= 36; x += 10) {
+        createLamp(x, 4.8);
+        createLamp(x, -4.8);
+    }
+
+    // 长椅（在教学楼和图书馆附近）
     const benchPositions = [
-        [-5, 4], [5, 4], [-5, -4], [5, -4],
-        [-18, -14], [-18, 0], [18, 0], [10, 14], [-12, 18]
+        [-14, -34], [14, -34],                     // 北区教学楼附近
+        [-6, 34], [6, 34],                          // 南区行政楼附近
+        [28, -8], [40, -8],                         // 东区食堂附近
+        [-26, -8], [-38, -8], [-26, 10], [-38, 10], // 宿舍区
+        [-8, 4], [8, 4], [-8, -4], [8, -4],        // 中心广场周边
+        [28, 10], [28, 18]                          // 体育馆附近
     ];
     benchPositions.forEach(([bx, bz]) => {
         createBench(bx, bz, Math.random() * Math.PI);
