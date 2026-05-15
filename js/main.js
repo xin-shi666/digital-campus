@@ -54,20 +54,51 @@ function buildScene() {
     const layerGroups = getLayerGroups();
 
     // ===== 道路系统 =====
-    // 中央十字主干道（扩宽延长）
-    createRoad(0, 0, 7, 95);                    // 南北主干道 z:-47 ~ z:47
-    createRoad(0, 0, 6, 80, Math.PI / 2);       // 东西主干道 x:-40 ~ x:40
-    // 北环道路
-    createRoad(0, -32, 4, 55);                   // 北侧横路
-    // 南环道路
-    createRoad(0, 32, 4, 55);                    // 南侧横路
-    // 西环道路
-    createRoad(-24, 0, 3, 50, Math.PI / 2);      // 西侧纵路
-    // 东环道路
-    createRoad(24, 0, 3, 50, Math.PI / 2);       // 东侧纵路
-    // 连接支路
-    createRoad(0, -16, 3, 16, Math.PI / 2);      // 北区连接
-    createRoad(0, 16, 3, 16, Math.PI / 2);       // 南区连接
+    // 中央十字主干道
+    createRoad(0, 0, 8, 100);                     // 南北主轴 z:-50 ~ z:50
+    createRoad(0, 0, 7, 90, Math.PI / 2);         // 东西主轴 x:-45 ~ x:45
+
+    // 内环道路（教学核心区）
+    createRoad(0, -24, 5, 60);                    // 北内环横路 x:-30 ~ x:30
+    createRoad(0, 24, 5, 60);                     // 南内环横路
+    createRoad(-18, 0, 4, 48, Math.PI / 2);       // 西内环纵路 z:-24 ~ z:24
+    createRoad(18, 0, 4, 48, Math.PI / 2);        // 东内环纵路
+
+    // 外环道路（校园边界）
+    createRoad(0, -42, 4, 75);                    // 北外环横路
+    createRoad(0, 42, 4, 75);                     // 南外环横路
+    createRoad(-36, 0, 4, 84, Math.PI / 2);       // 西外环纵路 z:-42 ~ z:42
+    createRoad(36, 0, 4, 84, Math.PI / 2);        // 东外环纵路
+
+    // 纵向连接道路（内环↔外环）
+    createRoad(-27, 0, 3, 84, Math.PI / 2);       // 西侧连接线
+    createRoad(27, 0, 3, 84, Math.PI / 2);        // 东侧连接线
+
+    // 横向连接道路
+    createRoad(0, -33, 3, 54);                    // 北侧连接横路（内环↔外环之间）
+    createRoad(0, 33, 3, 54);                     // 南侧连接横路
+
+    // 建筑入口支路（连接到主干道）
+    createRoad(-20, -7, 2.5, 14, Math.PI / 2);    // 通向西区宿舍
+    createRoad(-20, 7, 2.5, 14, Math.PI / 2);     // 通向西区宿舍B
+    createRoad(28, -6, 2.5, 12, Math.PI / 2);     // 通向食堂
+    createRoad(28, 7, 2.5, 14, Math.PI / 2);      // 通向体育馆
+    createRoad(-8, -7, 2.5, 14, Math.PI / 2);     // 通向图书馆
+    createRoad(8, -7, 2.5, 14, Math.PI / 2);      // 通向教学楼A
+    createRoad(-8, 7, 2.5, 14, Math.PI / 2);      // 通向教学楼B
+    createRoad(8, 7, 2.5, 14, Math.PI / 2);       // 通向行政中心
+
+    // 中心广场环形路
+    createRoad(0, 8, 2, 16, Math.PI / 2);         // 广场北侧通路
+    createRoad(0, -8, 2, 16, Math.PI / 2);        // 广场南侧通路
+    createRoad(-8, 0, 2, 16);                     // 广场西侧通路
+    createRoad(8, 0, 2, 16);                      // 广场东侧通路
+
+    // 沿外环的散步小径
+    createRoad(0, -45, 1.5, 72);                  // 北边界小径
+    createRoad(0, 45, 1.5, 72);                   // 南边界小径
+    createRoad(-39, 0, 1.5, 90, Math.PI / 2);     // 西边界小径
+    createRoad(39, 0, 1.5, 90, Math.PI / 2);      // 东边界小径
 
     // ===== 建筑群（分散布局） =====
     // 中心广场
