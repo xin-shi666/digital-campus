@@ -11,6 +11,167 @@ export function getLayerGroups() {
     return layerGroups;
 }
 
+// ===== 碰撞检测：道路占用区域 =====
+const roadZones = [];
+const buildingFootprints = [];
+
+// 预注册建筑足迹（在道路创建前使用）
+const plannedBuildings = [];
+
+export function planBuilding(x, z, w, d) {
+    plannedBuildings.push({
+        xmin: x - w / 2, xmax: x + w / 2,
+        zmin: z - d / 2, zmax: z + d / 2
+    });
+}
+
+export function registerBuilding(x, z, w, d) {
+    buildingFootprints.push({
+        xmin: x - w / 2, xmax: x + w / 2,
+        zmin: z - d / 2, zmax: z + d / 2
+    });
+}
+
+// 检测道路是否与预注册建筑交叉
+function roadOverlapsBuildings(x, z, width, length, rotation) {
+    let rxmin, rxmax, rzmin, rzmax;
+    if (rotation === 0) {
+        rxmin = x - width / 2;
+        rxmax = x + width / 2;
+        rzmin = z - length / 2;
+        rzmax = z + length / 2;
+    } else {
+        rxmin = x - length / 2;
+        rxmax = x + length / 2;
+        rzmin = z - width / 2;
+        rzmax = z + width / 2;
+    }
+    for (const b of plannedBuildings) {
+        if (rxmin < b.xmax && rxmax > b.xmin && rzmin < b.zmax && rzmax > b.zmin) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// 将被建筑截断的道路拆分为多个不重叠的段落
+function splitRoadByBuildings(x, z, width, length, rotation) {
+    let alongMin, alongMax, crossMin, crossMax;
+    if (rotation === 0) {
+        crossMin = x - width / 2;
+        crossMax = x + width / 2;
+        alongMin = z - length / 2;
+        alongMax = z + length / 2;
+    } else {
+        crossMin = z - width / 2;
+        crossMax = z + width / 2;
+        alongMin = x - length / 2;
+        alongMax = x + length / 2;
+    }
+
+    // 收集所有与建筑交叉的区间
+    const cuts = [];
+    for (const b of plannedBuildings) {
+        const bCrossMin = rotation === 0 ? b.xmin : b.zmin;
+        const bCrossMax = rotation === 0 ? b.xmax : b.zmax;
+        const bAlongMin = rotation === 0 ? b.zmin : b.xmin;
+        const bAlongMax = rotation === 0 ? b.zmax : b.xmax;
+
+        if (crossMin < bCrossMax && crossMax > bCrossMin) {
+            if (alongMin < bAlongMax && alongMax > bAlongMin) {
+                cuts.push({
+                    min: Math.max(alongMin, bAlongMin),
+                    max: Math.min(alongMax, bAlongMax)
+                });
+            }
+        }
+    }
+
+    if (cuts.length === 0) return [{ x, z, width, length }];
+
+    // 合并重叠的切割区间
+    cuts.sort((a, b) => a.min - b.min);
+    const merged = [cuts[0]];
+    for (let i = 1; i < cuts.length; i++) {
+        const last = merged[merged.length - 1];
+        if (cuts[i].min <= last.max) {
+            last.max = Math.max(last.max, cuts[i].max);
+        } else {
+            merged.push(cuts[i]);
+        }
+    }
+
+    // 生成不交叉的段落
+    const segments = [];
+    let start = alongMin;
+    const minLen = 1.5;
+    for (const cut of merged) {
+        if (cut.min - start > minLen) {
+            const segCenter = (start + cut.min) / 2;
+            const segLength = cut.min - start;
+            if (rotation === 0) {
+                segments.push({ x, z: segCenter, width, length: segLength });
+            } else {
+                segments.push({ x: segCenter, z, width, length: segLength });
+            }
+        }
+        start = cut.max;
+    }
+    if (alongMax - start > minLen) {
+        const segCenter = (start + alongMax) / 2;
+        const segLength = alongMax - start;
+        if (rotation === 0) {
+            segments.push({ x, z: segCenter, width, length: segLength });
+        } else {
+            segments.push({ x: segCenter, z, width, length: segLength });
+        }
+    }
+
+    return segments;
+}
+
+// 安全创建道路：自动避开预注册建筑
+export function createSafeRoad(x, z, width, length, rotation = 0) {
+    const segments = splitRoadByBuildings(x, z, width, length, rotation);
+    for (const seg of segments) {
+        createRoad(seg.x, seg.z, seg.width, seg.length, rotation);
+    }
+}
+
+function registerRoadZone(x, z, width, length, rotation) {
+    let xmin, xmax, zmin, zmax;
+    if (rotation === 0) {
+        xmin = x - width / 2;
+        xmax = x + width / 2;
+        zmin = z - length / 2;
+        zmax = z + length / 2;
+    } else {
+        xmin = x - length / 2;
+        xmax = x + length / 2;
+        zmin = z - width / 2;
+        zmax = z + width / 2;
+    }
+    roadZones.push({ xmin, xmax, zmin, zmax });
+}
+
+export function isOnRoad(x, z, margin = 0.5) {
+    return roadZones.some(r =>
+        x >= r.xmin - margin && x <= r.xmax + margin &&
+        z >= r.zmin - margin && z <= r.zmax + margin
+    );
+}
+
+export function isOnBuilding(x, z, margin = 1.0) {
+    return buildingFootprints.some(b =>
+        x >= b.xmin - margin && x <= b.xmax + margin &&
+        z >= b.zmin - margin && z <= b.zmax + margin
+    );
+}
+
+export function isValidPosition(x, z, roadMargin = 0.8, buildingMargin = 1.5) {
+    return !isOnRoad(x, z, roadMargin) && !isOnBuilding(x, z, buildingMargin);
+}
+
 export function createBuilding(x, z, w, d, h, color, info) {
     const group = new THREE.Group();
     group.name = info.title;
@@ -183,6 +344,8 @@ export function createRoad(x, z, width, length, rotation = 0) {
     group.rotation.y = rotation;
     group.userData.layer = 'roads';
     layerGroups.roads.add(group);
+
+    registerRoadZone(x, z, width, length, rotation);
     return group;
 }
 
